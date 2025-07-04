@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Edit, ExternalLink, Upload, Calendar, Github, Link } from 'lucide-react';
+import { Plus, Edit, ExternalLink, Upload, Calendar, Github, Link, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ProjectsSectionProps {
@@ -16,33 +16,37 @@ const ProjectsSection = ({ isOwnerView }: ProjectsSectionProps) => {
 
   const [embeddedProjects, setEmbeddedProjects] = useState([
     {
+      id: 1,
       name: "Air Quality Monitoring Bot",
       date: "2024",
       techStack: ["ESP8266", "DHT11", "MQ135", "Arduino IDE"],
       description: "IoT-based air quality monitoring system that tracks environmental parameters including temperature, humidity, and air quality index. Features real-time data transmission and web dashboard for monitoring.",
-      githubLink: "https://github.com/t-swami/air-quality-monitor",
+      githubLink: "https://github.com/tallanarayanaswami/air-quality-monitor",
       image: "/placeholder.svg"
     },
     {
+      id: 2,
       name: "Soldier Health Monitor",
       date: "2024", 
       techStack: ["Arduino", "GPS", "GSM", "IoT sensors"],
       description: "Real-time health monitoring system for military personnel with GPS tracking, vital signs monitoring, and emergency alert capabilities. Designed for harsh environmental conditions.",
-      githubLink: "https://github.com/t-swami/soldier-health-monitor",
+      githubLink: "https://github.com/tallanarayanaswami/soldier-health-monitor",
       image: "/placeholder.svg"
     },
     {
+      id: 3,
       name: "Vehicle Theft & Tracking System",
       date: "2023",
       techStack: ["ESP8266", "GPS", "RFID", "Arduino IDE"],
       description: "Advanced vehicle security system with RFID-based access control, GPS tracking, and SMS alerts. Features anti-theft mechanisms and real-time location tracking.",
-      githubLink: "https://github.com/t-swami/vehicle-tracking",
+      githubLink: "https://github.com/tallanarayanaswami/vehicle-tracking",
       image: "/placeholder.svg"
     }
   ]);
 
   const [vlsiProjects, setVlsiProjects] = useState([
     {
+      id: 4,
       name: "Electronic Voting Machine",
       date: "Coming Soon",
       techStack: ["Verilog", "FPGA", "Digital Logic"],
@@ -51,6 +55,7 @@ const ProjectsSection = ({ isOwnerView }: ProjectsSectionProps) => {
       image: "/placeholder.svg"
     },
     {
+      id: 5,
       name: "4-Bit Flash Analog to Digital Converter",
       date: "Coming Soon", 
       techStack: ["CMOS", "Analog Design", "Cadence"],
@@ -59,6 +64,7 @@ const ProjectsSection = ({ isOwnerView }: ProjectsSectionProps) => {
       image: "/placeholder.svg"
     },
     {
+      id: 6,
       name: "4-bit Look Up Table",
       date: "Coming Soon",
       techStack: ["Verilog", "RTL Design", "FPGA"],
@@ -69,25 +75,129 @@ const ProjectsSection = ({ isOwnerView }: ProjectsSectionProps) => {
   ]);
 
   const handleAddProject = (category: string) => {
+    const name = prompt("Enter project name:");
+    if (!name?.trim()) return;
+
+    const description = prompt("Enter project description:");
+    if (!description?.trim()) return;
+
+    const techStackInput = prompt("Enter tech stack (comma separated):");
+    const techStack = techStackInput?.split(',').map(tech => tech.trim()).filter(tech => tech) || [];
+
+    const newProject = {
+      id: Date.now(),
+      name: name.trim(),
+      date: new Date().getFullYear().toString(),
+      techStack,
+      description: description.trim(),
+      githubLink: "",
+      image: "/placeholder.svg"
+    };
+
+    if (category === 'Embedded') {
+      setEmbeddedProjects([...embeddedProjects, newProject]);
+    } else {
+      setVlsiProjects([...vlsiProjects, newProject]);
+    }
+
     toast({
-      title: "Add Project",
-      description: `Adding new project to ${category} category...`,
+      title: "Project Added",
+      description: `${name} has been added to ${category} projects.`,
     });
   };
 
-  const handleImageUpload = (projectName: string) => {
+  const handleEditProject = (projectId: number, category: string) => {
+    const projects = category === 'embedded' ? embeddedProjects : vlsiProjects;
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    const name = prompt("Edit project name:", project.name);
+    if (!name?.trim()) return;
+
+    const description = prompt("Edit project description:", project.description);
+    if (!description?.trim()) return;
+
+    const updatedProject = {
+      ...project,
+      name: name.trim(),
+      description: description.trim()
+    };
+
+    if (category === 'embedded') {
+      setEmbeddedProjects(embeddedProjects.map(p => p.id === projectId ? updatedProject : p));
+    } else {
+      setVlsiProjects(vlsiProjects.map(p => p.id === projectId ? updatedProject : p));
+    }
+
     toast({
-      title: "Upload Image",
-      description: `Uploading image for ${projectName}...`,
+      title: "Project Updated",
+      description: "Project details have been updated.",
     });
   };
 
-  const handleEditGithubLink = (projectName: string) => {
-    const newLink = prompt(`Enter GitHub link for ${projectName}:`);
-    if (newLink) {
+  const handleDeleteProject = (projectId: number, category: string) => {
+    if (!confirm("Are you sure you want to delete this project?")) return;
+
+    if (category === 'embedded') {
+      setEmbeddedProjects(embeddedProjects.filter(p => p.id !== projectId));
+    } else {
+      setVlsiProjects(vlsiProjects.filter(p => p.id !== projectId));
+    }
+
+    toast({
+      title: "Project Deleted",
+      description: "Project has been deleted.",
+    });
+  };
+
+  const handleImageUpload = (projectId: number, category: string) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const imageUrl = URL.createObjectURL(file);
+        
+        if (category === 'embedded') {
+          setEmbeddedProjects(embeddedProjects.map(p => 
+            p.id === projectId ? { ...p, image: imageUrl } : p
+          ));
+        } else {
+          setVlsiProjects(vlsiProjects.map(p => 
+            p.id === projectId ? { ...p, image: imageUrl } : p
+          ));
+        }
+        
+        toast({
+          title: "Image Uploaded",
+          description: "Project image has been updated.",
+        });
+      }
+    };
+    input.click();
+  };
+
+  const handleEditGithubLink = (projectId: number, category: string) => {
+    const projects = category === 'embedded' ? embeddedProjects : vlsiProjects;
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    const newLink = prompt("Enter GitHub link:", project.githubLink);
+    if (newLink !== null) {
+      if (category === 'embedded') {
+        setEmbeddedProjects(embeddedProjects.map(p => 
+          p.id === projectId ? { ...p, githubLink: newLink.trim() } : p
+        ));
+      } else {
+        setVlsiProjects(vlsiProjects.map(p => 
+          p.id === projectId ? { ...p, githubLink: newLink.trim() } : p
+        ));
+      }
+      
       toast({
         title: "GitHub Link Updated",
-        description: `GitHub link for ${projectName} has been updated.`,
+        description: "GitHub link has been updated.",
       });
     }
   };
@@ -96,14 +206,17 @@ const ProjectsSection = ({ isOwnerView }: ProjectsSectionProps) => {
     <Card className="group border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-white overflow-hidden rounded-2xl transform hover:scale-105">
       {isOwnerView && (
         <div className="absolute top-4 right-4 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button variant="outline" size="sm" className="bg-white/90 backdrop-blur-sm">
+          <Button variant="outline" size="sm" className="bg-white/90 backdrop-blur-sm" onClick={() => handleEditProject(project.id, category)}>
             <Edit className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={() => handleImageUpload(project.name)} className="bg-white/90 backdrop-blur-sm">
+          <Button variant="outline" size="sm" onClick={() => handleImageUpload(project.id, category)} className="bg-white/90 backdrop-blur-sm">
             <Upload className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={() => handleEditGithubLink(project.name)} className="bg-white/90 backdrop-blur-sm">
+          <Button variant="outline" size="sm" onClick={() => handleEditGithubLink(project.id, category)} className="bg-white/90 backdrop-blur-sm">
             <Link className="w-4 h-4" />
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => handleDeleteProject(project.id, category)} className="bg-white/90 backdrop-blur-sm text-red-600">
+            <Trash2 className="w-4 h-4" />
           </Button>
         </div>
       )}
@@ -144,13 +257,18 @@ const ProjectsSection = ({ isOwnerView }: ProjectsSectionProps) => {
 
         <div className="flex gap-3 pt-4">
           {project.githubLink ? (
-            <Button variant="outline" size="sm" className="flex-1 group/btn hover:bg-gray-900 hover:text-white transition-all">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex-1 group/btn hover:bg-gray-900 hover:text-white transition-all"
+              onClick={() => window.open(project.githubLink, '_blank')}
+            >
               <Github className="w-4 h-4 mr-2" />
               GitHub
             </Button>
           ) : (
             isOwnerView && (
-              <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEditGithubLink(project.name)}>
+              <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEditGithubLink(project.id, category)}>
                 Add GitHub Link
               </Button>
             )
@@ -199,8 +317,8 @@ const ProjectsSection = ({ isOwnerView }: ProjectsSectionProps) => {
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {embeddedProjects.map((project, index) => (
-                <ProjectCard key={index} project={project} category="embedded" />
+              {embeddedProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} category="embedded" />
               ))}
             </div>
           </TabsContent>
@@ -217,8 +335,8 @@ const ProjectsSection = ({ isOwnerView }: ProjectsSectionProps) => {
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {vlsiProjects.map((project, index) => (
-                <ProjectCard key={index} project={project} category="vlsi" />
+              {vlsiProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} category="vlsi" />
               ))}
             </div>
           </TabsContent>
