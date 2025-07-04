@@ -17,10 +17,17 @@ const Index = () => {
   const [isOwnerView, setIsOwnerView] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/50 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute top-1/2 -left-32 w-64 h-64 bg-gradient-to-br from-indigo-400/20 to-cyan-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-40 right-1/3 w-48 h-48 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+      </div>
+
       <Navigation isOwnerView={isOwnerView} setIsOwnerView={setIsOwnerView} />
       
-      <main className="relative">
+      <main className="relative z-10">
         <HeroSection isOwnerView={isOwnerView} />
         <AboutSection isOwnerView={isOwnerView} />
         <SkillsSection isOwnerView={isOwnerView} />
