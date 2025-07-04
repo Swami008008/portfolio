@@ -10,6 +10,7 @@ interface HeroSectionProps {
 
 const HeroSection = ({ isOwnerView }: HeroSectionProps) => {
   const [profileImage, setProfileImage] = useState('/placeholder.svg');
+  const [hasResume, setHasResume] = useState(false);
   const { toast } = useToast();
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,11 +28,27 @@ const HeroSection = ({ isOwnerView }: HeroSectionProps) => {
     }
   };
 
+  const handleResumeUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      setHasResume(true);
+      toast({
+        title: "Resume uploaded",
+        description: "Your resume has been uploaded successfully.",
+      });
+    }
+  };
+
   const handleResumeView = () => {
-    toast({
-      title: "Resume",
-      description: "Resume viewing functionality will be implemented with PDF upload.",
-    });
+    if (hasResume) {
+      window.open('/resume', '_blank');
+    } else {
+      toast({
+        title: "No resume available",
+        description: "Please upload a resume first.",
+        variant: "destructive"
+      });
+    }
   };
 
   const scrollToContact = () => {
@@ -41,73 +58,43 @@ const HeroSection = ({ isOwnerView }: HeroSectionProps) => {
     }
   };
 
+  const techDetails = [
+    { name: "Verilog", color: "from-blue-500 to-blue-600" },
+    { name: "SystemVerilog", color: "from-purple-500 to-purple-600" },
+    { name: "Digital Electronics", color: "from-green-500 to-green-600" },
+    { name: "CMOS", color: "from-indigo-500 to-indigo-600" },
+    { name: "FPGA", color: "from-pink-500 to-pink-600" }
+  ];
+
   return (
     <section id="home" className="relative pt-24 pb-20 px-4 min-h-screen flex items-center">
       <div className="container mx-auto max-w-7xl">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
-          {/* Content */}
-          <div className="lg:w-1/2 text-center lg:text-left space-y-8">
-            <div className="relative">
-              {isOwnerView && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="absolute -top-16 right-0 glass-effect hover:bg-white/90 border-white/30"
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit Content
-                </Button>
-              )}
-              
-              <div className="space-y-6">
-                <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/30 backdrop-blur-sm">
-                  <Sparkles className="w-4 h-4 mr-2 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-800">Welcome to my portfolio</span>
-                </div>
-                
-                <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-                  <span className="block text-gray-900 mb-2">Hello, I'm</span>
-                  <span className="gradient-text animate-pulse">
-                    Talla Narayana Swami
-                  </span>
-                </h1>
-                
-                <p className="text-xl lg:text-2xl text-gray-600 font-medium leading-relaxed max-w-2xl">
-                  VLSI Enthusiast | Verilog | SystemVerilog | FPGA | Digital Electronics
-                </p>
-                
-                <p className="text-lg text-gray-500 max-w-xl leading-relaxed">
-                  Passionate about designing the future of semiconductor technology through innovative VLSI solutions and digital circuit design.
-                </p>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start mt-10">
-                <Button 
-                  onClick={handleResumeView}
-                  className="group bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white px-8 py-6 text-lg rounded-2xl shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
-                >
-                  <Download className="w-5 h-5 mr-2 group-hover:animate-bounce" />
-                  View Resume
-                </Button>
-                
-                <Button 
-                  variant="outline"
-                  onClick={scrollToContact}
-                  className="group glass-effect hover:bg-white/90 border-2 border-blue-200/50 text-blue-700 hover:text-blue-800 px-8 py-6 text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-                >
-                  <Mail className="w-5 h-5 mr-2 group-hover:animate-pulse" />
-                  Contact Me
-                </Button>
-              </div>
+        <div className="text-center space-y-12">
+          {/* Welcome Message */}
+          <div className="space-y-8">
+            <div className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200/30 backdrop-blur-sm">
+              <Sparkles className="w-5 h-5 mr-3 text-blue-600" />
+              <span className="text-lg font-medium text-blue-800">Welcome to my portfolio</span>
             </div>
+            
+            <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+              <span className="block text-gray-900 mb-4">Hello, I'm</span>
+              <span className="gradient-text animate-pulse">
+                Talla Narayana Swami
+              </span>
+            </h1>
+            
+            <p className="text-xl lg:text-2xl text-gray-600 font-medium leading-relaxed max-w-3xl mx-auto">
+              VLSI Enthusiast | Verilog | SystemVerilog | FPGA | Digital Electronics
+            </p>
           </div>
 
-          {/* Profile Image */}
-          <div className="lg:w-1/2 flex justify-center">
+          {/* Profile Image with Tech Details */}
+          <div className="relative flex justify-center">
             <div className="relative group">
               {/* Decorative rings */}
-              <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 animate-pulse"></div>
-              <div className="absolute -inset-8 rounded-full bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 animate-ping"></div>
+              <div className="absolute -inset-6 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 animate-pulse"></div>
+              <div className="absolute -inset-12 rounded-full bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 animate-ping"></div>
               
               <div className="relative w-80 h-80 lg:w-96 lg:h-96">
                 <div className="w-full h-full rounded-full overflow-hidden border-8 border-white shadow-2xl bg-gradient-to-br from-blue-100 via-white to-indigo-100 card-hover animate-glow">
@@ -133,18 +120,73 @@ const HeroSection = ({ isOwnerView }: HeroSectionProps) => {
                   </label>
                 )}
 
-                {/* Floating skill badges */}
-                <div className="absolute -top-4 -right-8 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-semibold rounded-full shadow-lg animate-float">
-                  VLSI Expert
-                </div>
-                <div className="absolute -bottom-6 -left-8 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-sm font-semibold rounded-full shadow-lg animate-float" style={{ animationDelay: '1s' }}>
-                  FPGA Developer
-                </div>
-                <div className="absolute top-1/2 -right-16 px-3 py-1 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xs font-semibold rounded-full shadow-lg animate-float" style={{ animationDelay: '2s' }}>
-                  SystemVerilog
-                </div>
+                {/* Floating tech badges */}
+                {techDetails.map((tech, index) => {
+                  const positions = [
+                    { top: '-top-6', right: '-right-12' },
+                    { bottom: '-bottom-8', left: '-left-16' },
+                    { top: 'top-1/4', right: '-right-20' },
+                    { bottom: 'bottom-1/4', left: '-left-20' },
+                    { top: 'top-3/4', right: '-right-16' }
+                  ];
+                  const pos = positions[index % positions.length];
+                  
+                  return (
+                    <div 
+                      key={tech.name}
+                      className={`absolute ${pos.top || ''} ${pos.bottom || ''} ${pos.left || ''} ${pos.right || ''} px-4 py-2 bg-gradient-to-r ${tech.color} text-white text-sm font-semibold rounded-full shadow-lg animate-float`}
+                      style={{ animationDelay: `${index * 0.5}s` }}
+                    >
+                      {tech.name}
+                    </div>
+                  );
+                })}
               </div>
             </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center mt-12">
+            <div className="relative">
+              <Button 
+                onClick={handleResumeView}
+                className="group bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white px-8 py-6 text-lg rounded-2xl shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105"
+              >
+                <Download className="w-5 h-5 mr-2 group-hover:animate-bounce" />
+                View Resume
+              </Button>
+              
+              {isOwnerView && (
+                <label className="absolute -top-12 left-1/2 transform -translate-x-1/2 cursor-pointer">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="glass-effect hover:bg-white/90 border-white/30"
+                    asChild
+                  >
+                    <span>
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Resume
+                    </span>
+                  </Button>
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleResumeUpload}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+            
+            <Button 
+              variant="outline"
+              onClick={scrollToContact}
+              className="group glass-effect hover:bg-white/90 border-2 border-blue-200/50 text-blue-700 hover:text-blue-800 px-8 py-6 text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+            >
+              <Mail className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+              Contact Me
+            </Button>
           </div>
         </div>
       </div>

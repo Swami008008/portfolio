@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Github, Linkedin, Mail, Heart } from 'lucide-react';
 
@@ -8,17 +7,17 @@ const Footer = () => {
   const socialLinks = [
     {
       icon: Linkedin,
-      href: "https://linkedin.com/in/tallanarayanaswami",
+      href: "https://www.linkedin.com/in/swamitalla/",
       label: "LinkedIn"
     },
     {
       icon: Github,
-      href: "https://github.com/tallanarayanaswami",
+      href: "https://github.com/t-swami",
       label: "GitHub"
     },
     {
       icon: Mail,
-      href: "mailto:tallanarayanaswami@gmail.com",
+      href: "mailto:swami.8talla@gmail.com",
       label: "Email"
     }
   ];
@@ -83,10 +82,21 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
             <ul className="space-y-3">
-              {quickLinks.map((link, index) => (
+              {[
+                { label: "About", href: "#about" },
+                { label: "Skills", href: "#skills" },
+                { label: "Projects", href: "#projects" },
+                { label: "Experience", href: "#experience" },
+                { label: "Contact", href: "#contact" }
+              ].map((link, index) => (
                 <li key={index}>
                   <button
-                    onClick={() => scrollToSection(link.href)}
+                    onClick={() => {
+                      const element = document.querySelector(link.href);
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
                     className="text-gray-300 hover:text-white transition-colors duration-200 text-left"
                   >
                     {link.label}
@@ -103,16 +113,16 @@ const Footer = () => {
               <div className="text-gray-300">
                 <div className="font-medium">Email</div>
                 <a 
-                  href="mailto:tallanarayanaswami@gmail.com"
+                  href="mailto:swami.8talla@gmail.com"
                   className="text-blue-400 hover:text-blue-300 transition-colors text-sm"
                 >
-                  tallanarayanaswami@gmail.com
+                  swami.8talla@gmail.com
                 </a>
               </div>
               
               <div className="text-gray-300">
                 <div className="font-medium">Location</div>
-                <div className="text-sm">Punjab, India</div>
+                <div className="text-sm">Vijayawada, AP, India</div>
               </div>
               
               <div className="text-gray-300">

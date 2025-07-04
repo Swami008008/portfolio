@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, MapPin, Phone, Send, Github, Linkedin } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Github, Linkedin, Heart, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const ContactSection = () => {
@@ -26,7 +26,6 @@ const ContactSection = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
     if (!formData.name || !formData.email || !formData.message) {
       toast({
         title: "Required fields missing",
@@ -36,13 +35,14 @@ const ContactSection = () => {
       return;
     }
 
-    // Simulate form submission
+    // Here you would send the data to a spreadsheet/database
+    console.log('Form submitted:', formData);
+    
     toast({
       title: "Message sent successfully!",
       description: "Thank you for your message. I'll get back to you soon.",
     });
 
-    // Reset form
     setFormData({ name: '', email: '', message: '' });
   };
 
@@ -50,13 +50,13 @@ const ContactSection = () => {
     {
       icon: Mail,
       label: "Email",
-      value: "tallanarayanaswami@gmail.com",
-      href: "mailto:tallanarayanaswami@gmail.com"
+      value: "swami.8talla@gmail.com",
+      href: "mailto:swami.8talla@gmail.com"
     },
     {
       icon: MapPin,
       label: "Location",
-      value: "Punjab, India",
+      value: "Vijayawada, AP, India",
       href: ""
     },
     {
@@ -71,19 +71,19 @@ const ContactSection = () => {
     {
       icon: Linkedin,
       label: "LinkedIn",
-      href: "https://linkedin.com/in/tallanarayanaswami",
+      href: "https://www.linkedin.com/in/swamitalla/",
       color: "from-blue-600 to-blue-700"
     },
     {
       icon: Github,
       label: "GitHub", 
-      href: "https://github.com/tallanarayanaswami",
+      href: "https://github.com/t-swami",
       color: "from-gray-800 to-gray-900"
     }
   ];
 
   return (
-    <section id="contact" className="py-20 px-4 bg-gradient-to-br from-gray-50 to-blue-50">
+    <section id="contact" className="py-20 px-4 bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
@@ -97,17 +97,17 @@ const ContactSection = () => {
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <Card className="border-0 shadow-xl bg-white">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-gray-800 flex items-center">
-                <Send className="w-6 h-6 mr-3 text-blue-600" />
+          <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
+              <CardTitle className="text-2xl font-bold flex items-center">
+                <Send className="w-6 h-6 mr-3" />
                 Send a Message
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-3">
                     Full Name *
                   </label>
                   <Input
@@ -118,12 +118,12 @@ const ContactSection = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Your full name"
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg h-12"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-3">
                     Email Address *
                   </label>
                   <Input
@@ -134,29 +134,29 @@ const ContactSection = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="your.email@example.com"
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg h-12"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-3">
                     Message *
                   </label>
                   <Textarea
                     id="message"
                     name="message"
                     required
-                    rows={5}
+                    rows={6}
                     value={formData.message}
                     onChange={handleInputChange}
                     placeholder="Tell me about your project, opportunity, or just say hello..."
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 resize-none"
+                    className="border-2 border-gray-200 focus:border-blue-500 focus:ring-blue-500 resize-none rounded-lg"
                   />
                 </div>
 
                 <Button 
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
                 >
                   <Send className="w-5 h-5 mr-2" />
                   Send Message
@@ -165,33 +165,34 @@ const ContactSection = () => {
             </CardContent>
           </Card>
 
-          {/* Contact Information */}
-          <div className="space-y-6">
-            <Card className="border-0 shadow-xl bg-white">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-800">
+          {/* Contact Information & Social */}
+          <div className="space-y-8">
+            {/* Contact Info */}
+            <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg">
+                <CardTitle className="text-2xl font-bold">
                   Contact Information
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-6 space-y-4">
                 {contactInfo.map((info, index) => {
                   const IconComponent = info.icon;
                   return (
-                    <div key={index} className="flex items-center space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                        <IconComponent className="w-6 h-6 text-white" />
+                    <div key={index} className="flex items-center space-x-4 p-4 rounded-xl hover:bg-blue-50 transition-colors duration-300 border border-gray-100">
+                      <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <IconComponent className="w-7 h-7 text-white" />
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-800">{info.label}</div>
+                        <div className="font-bold text-gray-800 text-lg">{info.label}</div>
                         {info.href ? (
                           <a 
                             href={info.href}
-                            className="text-blue-600 hover:text-blue-700 transition-colors"
+                            className="text-blue-600 hover:text-blue-700 transition-colors font-medium"
                           >
                             {info.value}
                           </a>
                         ) : (
-                          <div className="text-gray-600">{info.value}</div>
+                          <div className="text-gray-600 font-medium">{info.value}</div>
                         )}
                       </div>
                     </div>
@@ -201,13 +202,13 @@ const ContactSection = () => {
             </Card>
 
             {/* Social Links */}
-            <Card className="border-0 shadow-xl bg-white">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-800">
+            <Card className="border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-t-lg">
+                <CardTitle className="text-2xl font-bold">
                   Connect With Me
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="grid grid-cols-2 gap-4">
                   {socialLinks.map((social, index) => {
                     const IconComponent = social.icon;
@@ -219,9 +220,9 @@ const ContactSection = () => {
                         rel="noopener noreferrer"
                         className="group"
                       >
-                        <div className={`p-6 rounded-xl bg-gradient-to-br ${social.color} text-white text-center hover:shadow-lg transition-all duration-300 group-hover:scale-105`}>
-                          <IconComponent className="w-8 h-8 mx-auto mb-3" />
-                          <div className="font-semibold">{social.label}</div>
+                        <div className={`p-8 rounded-2xl bg-gradient-to-br ${social.color} text-white text-center hover:shadow-2xl transition-all duration-300 group-hover:scale-110 transform`}>
+                          <IconComponent className="w-10 h-10 mx-auto mb-4" />
+                          <div className="font-bold text-lg">{social.label}</div>
                         </div>
                       </a>
                     );
@@ -230,14 +231,25 @@ const ContactSection = () => {
               </CardContent>
             </Card>
 
-            {/* Quick Message */}
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
-              <CardContent className="p-6 text-center">
-                <h3 className="text-xl font-bold mb-3">Let's Collaborate!</h3>
-                <p className="opacity-90 leading-relaxed">
+            {/* Let's Collaborate Enhanced */}
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 text-white overflow-hidden relative">
+              <div className="absolute inset-0 bg-black/10"></div>
+              <CardContent className="p-8 text-center relative z-10">
+                <div className="flex justify-center mb-4">
+                  <div className="p-4 bg-white/20 rounded-full backdrop-blur-sm">
+                    <Star className="w-8 h-8" />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold mb-4">Let's Collaborate!</h3>
+                <p className="opacity-90 leading-relaxed text-lg mb-6">
                   I'm always excited to discuss VLSI projects, embedded systems, and innovative technology solutions. 
                   Feel free to reach out for collaboration opportunities or technical discussions.
                 </p>
+                <div className="flex items-center justify-center space-x-2 text-yellow-300">
+                  <Heart className="w-5 h-5 animate-pulse" />
+                  <span className="font-semibold">Open for opportunities</span>
+                  <Heart className="w-5 h-5 animate-pulse" />
+                </div>
               </CardContent>
             </Card>
           </div>
