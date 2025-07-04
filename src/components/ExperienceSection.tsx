@@ -133,7 +133,7 @@ const ExperienceSection = ({ isOwnerView }: ExperienceSectionProps) => {
                       </div>
                     </div>
                   </CardHeader>
-                </CollipsibleTrigger>
+                </CollapsibleTrigger>
                 
                 <CollapsibleContent>
                   <CardContent className="p-6 bg-gray-50">
