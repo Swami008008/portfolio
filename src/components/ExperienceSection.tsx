@@ -15,7 +15,7 @@ const ExperienceSection = ({ isOwnerView }: ExperienceSectionProps) => {
   const [openItems, setOpenItems] = useState<number[]>([0]);
   const { toast } = useToast();
 
-  const experiences = [
+  const [experiences, setExperiences] = useState([
     {
       title: "VISI Internship",
       company: "SURE Trust",
@@ -46,7 +46,7 @@ const ExperienceSection = ({ isOwnerView }: ExperienceSectionProps) => {
       technologies: ["Microcontrollers", "Embedded C", "Hardware Integration", "IoT"],
       color: "from-purple-500 to-purple-600"
     }
-  ];
+  ]);
 
   const toggleItem = (index: number) => {
     setOpenItems(prev => 
@@ -68,6 +68,19 @@ const ExperienceSection = ({ isOwnerView }: ExperienceSectionProps) => {
       title: "Edit Experience",
       description: `Editing experience ${index + 1} functionality will be implemented.`,
     });
+  };
+
+  const handleAddSkill = (expIndex: number) => {
+    const newSkill = prompt("Add a new skill/technology:");
+    if (newSkill) {
+      const updatedExperiences = [...experiences];
+      updatedExperiences[expIndex].technologies.push(newSkill);
+      setExperiences(updatedExperiences);
+      toast({
+        title: "Skill Added",
+        description: `${newSkill} has been added to your experience.`,
+      });
+    }
   };
 
   return (
@@ -143,7 +156,15 @@ const ExperienceSection = ({ isOwnerView }: ExperienceSectionProps) => {
                     </div>
                     
                     <div>
-                      <h5 className="font-semibold text-gray-800 mb-3">Technologies & Skills</h5>
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="font-semibold text-gray-800">Technologies & Skills</h5>
+                        {isOwnerView && (
+                          <Button variant="outline" size="sm" onClick={() => handleAddSkill(index)}>
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add Skill
+                          </Button>
+                        )}
+                      </div>
                       <div className="flex flex-wrap gap-2">
                         {exp.technologies.map((tech, techIndex) => (
                           <Badge 

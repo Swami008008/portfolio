@@ -14,7 +14,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
   const [publicAchievements, setPublicAchievements] = useState<boolean[]>([true, true, true]);
   const { toast } = useToast();
 
-  const achievements = [
+  const [achievements, setAchievements] = useState([
     {
       title: "Verilog-HDL GitHub Challenge",
       description: "Started an innovative GitHub challenge focused on Verilog HDL programming to help the community learn and practice digital design concepts.",
@@ -22,7 +22,8 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
       year: "2024",
       color: "from-blue-500 to-indigo-600",
       icon: Github,
-      hasProof: true
+      hasProof: true,
+      proofUrl: "https://github.com/t-swami/verilog-challenge"
     },
     {
       title: "2nd Prize - LPU Hack-IoT",
@@ -31,7 +32,8 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
       year: "2024",
       color: "from-green-500 to-green-600",
       icon: Trophy,
-      hasProof: true
+      hasProof: true,
+      proofUrl: ""
     },
     {
       title: "Offer Letter - SoCtronics (HR)",
@@ -40,15 +42,34 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
       year: "2024",
       color: "from-purple-500 to-purple-600",
       icon: Trophy,
-      hasProof: true
+      hasProof: true,
+      proofUrl: ""
     }
-  ];
+  ]);
 
   const handleUploadProof = (index: number) => {
-    toast({
-      title: "Upload Proof",
-      description: `Uploading proof for ${achievements[index].title}...`,
-    });
+    const proofUrl = prompt("Enter proof URL or upload file:");
+    if (proofUrl) {
+      const updatedAchievements = [...achievements];
+      updatedAchievements[index].proofUrl = proofUrl;
+      setAchievements(updatedAchievements);
+      toast({
+        title: "Proof Uploaded",
+        description: `Proof for ${achievements[index].title} has been uploaded.`,
+      });
+    }
+  };
+
+  const handleViewProof = (achievement: any) => {
+    if (achievement.proofUrl) {
+      window.open(achievement.proofUrl, '_blank');
+    } else {
+      toast({
+        title: "Proof Not Available",
+        description: "No proof has been uploaded for this achievement.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleEditAchievement = (index: number) => {
@@ -97,17 +118,17 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {achievements.map((achievement, index) => {
             const IconComponent = achievement.icon;
             return (
-              <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group bg-white">
-                <div className={`h-3 bg-gradient-to-r ${achievement.color}`}></div>
+              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group bg-white">
+                <div className={`h-2 bg-gradient-to-r ${achievement.color}`}></div>
                 
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`w-14 h-14 rounded-full bg-gradient-to-r ${achievement.color} flex items-center justify-center flex-shrink-0`}>
-                      <IconComponent className="w-7 h-7 text-white" />
+                    <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${achievement.color} flex items-center justify-center flex-shrink-0`}>
+                      <IconComponent className="w-6 h-6 text-white" />
                     </div>
                     
                     {isOwnerView && (
@@ -157,6 +178,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
                         variant="outline" 
                         size="sm" 
                         className="flex-1 hover:bg-gray-50"
+                        onClick={() => handleViewProof(achievement)}
                       >
                         <ExternalLink className="w-4 h-4 mr-2" />
                         View Proof
@@ -166,6 +188,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
                           variant="outline" 
                           size="sm" 
                           className="flex-1 hover:bg-gray-50"
+                          onClick={() => window.open(achievement.proofUrl, '_blank')}
                         >
                           <Github className="w-4 h-4 mr-2" />
                           GitHub

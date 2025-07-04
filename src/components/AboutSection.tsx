@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Edit, Plus, Eye, EyeOff } from 'lucide-react';
+import { Edit, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface AboutSectionProps {
@@ -10,7 +10,6 @@ interface AboutSectionProps {
 }
 
 const AboutSection = ({ isOwnerView }: AboutSectionProps) => {
-  const [isPublic, setIsPublic] = useState(true);
   const [quote, setQuote] = useState("The future of technology lies in the intricate dance of electrons through silicon pathways.");
   const { toast } = useToast();
 
@@ -27,8 +26,8 @@ I continuously engage in Cadence-certified training and work hands-on with tools
     "Continuous Learning & Hands-on Development"
   ];
 
-  const handleAddQuote = () => {
-    const newQuote = prompt("Add an inspirational quote:", quote);
+  const handleEditQuote = () => {
+    const newQuote = prompt("Edit your inspirational quote:", quote);
     if (newQuote) {
       setQuote(newQuote);
       toast({
@@ -36,6 +35,13 @@ I continuously engage in Cadence-certified training and work hands-on with tools
         description: "Your inspirational quote has been updated.",
       });
     }
+  };
+
+  const handleEditAbout = () => {
+    toast({
+      title: "Edit About",
+      description: "About section editing functionality will be implemented.",
+    });
   };
 
   return (
@@ -52,17 +58,10 @@ I continuously engage in Cadence-certified training and work hands-on with tools
           {/* Main About Content */}
           <Card className="relative border-0 shadow-lg bg-white">
             {isOwnerView && (
-              <div className="absolute top-4 right-4 flex gap-2">
-                <Button variant="outline" size="sm">
+              <div className="absolute top-4 right-4">
+                <Button variant="outline" size="sm" onClick={handleEditAbout}>
                   <Edit className="w-4 h-4 mr-2" />
                   Edit
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setIsPublic(!isPublic)}
-                >
-                  {isPublic ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 </Button>
               </div>
             )}
@@ -85,15 +84,15 @@ I continuously engage in Cadence-certified training and work hands-on with tools
                 variant="outline" 
                 size="sm" 
                 className="absolute top-4 right-4"
-                onClick={handleAddQuote}
+                onClick={handleEditQuote}
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Quote
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Quote
               </Button>
             )}
             
             <CardContent className="p-8">
-              <blockquote className="text-xl italic text-blue-600 font-medium text-center mb-8">
+              <blockquote className="text-2xl italic text-blue-600 font-medium text-center mb-8">
                 "{quote}"
               </blockquote>
             </CardContent>

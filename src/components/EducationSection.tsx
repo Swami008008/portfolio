@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { GraduationCap, Calendar, MapPin, Award, Upload, Edit } from 'lucide-react';
+import { GraduationCap, Calendar, MapPin, Award, Plus, Edit } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface EducationSectionProps {
@@ -13,7 +13,7 @@ interface EducationSectionProps {
 const EducationSection = ({ isOwnerView }: EducationSectionProps) => {
   const { toast } = useToast();
 
-  const education = [
+  const [education, setEducation] = useState([
     {
       degree: "B.Tech - Electronics & Communication Engineering",
       institution: "Lovely Professional University",
@@ -41,12 +41,12 @@ const EducationSection = ({ isOwnerView }: EducationSectionProps) => {
       description: "Mathematics, Physics, Chemistry",
       color: "from-purple-500 to-purple-600"
     }
-  ];
+  ]);
 
-  const handleUploadCertificate = (index: number) => {
+  const handleAddEducation = () => {
     toast({
-      title: "Upload Certificate",
-      description: `Uploading certificate for ${education[index].degree}...`,
+      title: "Add Education",
+      description: "Adding new education entry functionality will be implemented.",
     });
   };
 
@@ -67,63 +67,58 @@ const EducationSection = ({ isOwnerView }: EducationSectionProps) => {
           <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full"></div>
         </div>
 
-        <div className="space-y-6">
+        {isOwnerView && (
+          <div className="flex justify-end mb-8">
+            <Button onClick={handleAddEducation} className="bg-gradient-to-r from-blue-600 to-indigo-600">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Education
+            </Button>
+          </div>
+        )}
+
+        <div className="space-y-4">
           {education.map((edu, index) => (
-            <Card key={index} className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group">
-              <div className={`h-2 bg-gradient-to-r ${edu.color}`}></div>
+            <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group bg-white">
+              <div className={`h-1 bg-gradient-to-r ${edu.color}`}></div>
               
-              <CardContent className="p-6 bg-white">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center mb-3">
-                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${edu.color} flex items-center justify-center mr-4`}>
-                        <GraduationCap className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-800">{edu.degree}</h3>
-                        <p className="text-lg font-semibold text-gray-600">{edu.institution}</p>
-                      </div>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center flex-1">
+                    <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${edu.color} flex items-center justify-center mr-4 flex-shrink-0`}>
+                      <GraduationCap className="w-5 h-5 text-white" />
                     </div>
                     
-                    <div className="ml-16 space-y-3">
-                      <div className="flex flex-wrap items-center gap-4 text-gray-600">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-gray-800 mb-1">{edu.degree}</h3>
+                      <p className="text-md font-semibold text-gray-600 mb-2">{edu.institution}</p>
+                      
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
                         <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-2" />
+                          <Calendar className="w-4 h-4 mr-1" />
                           <span>{edu.duration}</span>
                         </div>
                         <div className="flex items-center">
-                          <MapPin className="w-4 h-4 mr-2" />
+                          <MapPin className="w-4 h-4 mr-1" />
                           <span>{edu.location}</span>
                         </div>
-                        <div className="flex items-center">
-                          <Award className="w-4 h-4 mr-2" />
-                          <Badge variant="secondary" className={`bg-gradient-to-r ${edu.color} text-white`}>
-                            {edu.grade}
-                          </Badge>
-                        </div>
+                        <Badge variant="secondary" className={`bg-gradient-to-r ${edu.color} text-white text-xs`}>
+                          {edu.grade}
+                        </Badge>
                       </div>
                       
-                      <p className="text-gray-700 font-medium">{edu.description}</p>
+                      <p className="text-gray-700 text-sm mt-2">{edu.description}</p>
                     </div>
                   </div>
                   
                   {isOwnerView && (
-                    <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleUploadCertificate(index)}
-                      >
-                        <Upload className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleEditEducation(index)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity ml-4"
+                      onClick={() => handleEditEducation(index)}
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
                   )}
                 </div>
               </CardContent>

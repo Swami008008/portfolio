@@ -10,11 +10,10 @@ import EducationSection from '../components/EducationSection';
 import CertificationsSection from '../components/CertificationsSection';
 import AchievementsSection from '../components/AchievementsSection';
 import ContactSection from '../components/ContactSection';
-import BlogSection from '../components/BlogSection';
 import Footer from '../components/Footer';
 
 const Index = () => {
-  const [isOwnerView, setIsOwnerView] = useState(false);
+  const [isOwnerView, setIsOwnerView] = useState(true);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/50 relative overflow-hidden">
@@ -37,7 +36,6 @@ const Index = () => {
         <CertificationsSection isOwnerView={isOwnerView} />
         <AchievementsSection isOwnerView={isOwnerView} />
         <ContactSection />
-        <BlogSection isOwnerView={isOwnerView} />
       </main>
       
       <Footer />

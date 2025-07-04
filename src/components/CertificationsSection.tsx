@@ -13,63 +13,88 @@ interface CertificationsSectionProps {
 const CertificationsSection = ({ isOwnerView }: CertificationsSectionProps) => {
   const { toast } = useToast();
 
-  const certifications = [
+  const [certifications, setCertifications] = useState([
     {
       name: "Digital IC Design v3.0",
       issuer: "Cadence",
       year: "2024",
       category: "VLSI Design",
-      color: "from-blue-500 to-blue-600"
+      color: "from-blue-500 to-blue-600",
+      certificateUrl: ""
     },
     {
       name: "Verilog Applications",
       issuer: "Cadence",
       year: "2024",
       category: "HDL Programming",
-      color: "from-indigo-500 to-indigo-600"
+      color: "from-indigo-500 to-indigo-600",
+      certificateUrl: ""
     },
     {
       name: "Semiconductor 101",
       issuer: "Cadence",
       year: "2024",
       category: "Fundamentals",
-      color: "from-purple-500 to-purple-600"
+      color: "from-purple-500 to-purple-600",
+      certificateUrl: ""
     },
     {
       name: "VLSI for Beginners",
       issuer: "NIELIT",
       year: "2024",
       category: "VLSI Design",
-      color: "from-green-500 to-green-600"
+      color: "from-green-500 to-green-600",
+      certificateUrl: ""
     },
     {
       name: "Python for Beginners",
       issuer: "SimpliLearn",
       year: "2023",
       category: "Programming",
-      color: "from-yellow-500 to-orange-500"
+      color: "from-yellow-500 to-orange-500",
+      certificateUrl: ""
     },
     {
       name: "AVR Programming",
       issuer: "Microchip",
       year: "2023",
       category: "Embedded Systems",
-      color: "from-red-500 to-red-600"
+      color: "from-red-500 to-red-600",
+      certificateUrl: ""
     },
     {
       name: "CCNAv7",
       issuer: "Cisco",
       year: "2023",
       category: "Networking",
-      color: "from-cyan-500 to-blue-500"
+      color: "from-cyan-500 to-blue-500",
+      certificateUrl: ""
     }
-  ];
+  ]);
 
   const handleUploadCertificate = (index: number) => {
-    toast({
-      title: "Upload Certificate",
-      description: `Uploading certificate for ${certifications[index].name}...`,
-    });
+    const fileUrl = prompt("Enter certificate URL or upload file:");
+    if (fileUrl) {
+      const updatedCertifications = [...certifications];
+      updatedCertifications[index].certificateUrl = fileUrl;
+      setCertifications(updatedCertifications);
+      toast({
+        title: "Certificate Uploaded",
+        description: `Certificate for ${certifications[index].name} has been uploaded.`,
+      });
+    }
+  };
+
+  const handleViewCertificate = (cert: any) => {
+    if (cert.certificateUrl) {
+      window.open(cert.certificateUrl, '_blank');
+    } else {
+      toast({
+        title: "Certificate Not Available",
+        description: "No certificate has been uploaded for this certification.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleEditCertification = (index: number) => {
@@ -153,6 +178,7 @@ const CertificationsSection = ({ isOwnerView }: CertificationsSectionProps) => {
                     variant="outline" 
                     size="sm" 
                     className="w-full mt-4 hover:bg-gray-50"
+                    onClick={() => handleViewCertificate(cert)}
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
                     View Certificate
