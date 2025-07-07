@@ -35,7 +35,7 @@ const Index = () => {
         <EducationSection isOwnerView={isOwnerView} />
         <CertificationsSection isOwnerView={isOwnerView} />
         <AchievementsSection isOwnerView={isOwnerView} />
-        <ContactSection />
+        <ContactSection isOwnerView={isOwnerView} />
       </main>
       
       <Footer />

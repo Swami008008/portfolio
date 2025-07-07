@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Github, Upload, Edit, Plus, ExternalLink, Eye, EyeOff } from 'lucide-react';
+import { Trophy, Github, Upload, Edit, Plus, ExternalLink, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface AchievementsSectionProps {
@@ -16,6 +16,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
 
   const [achievements, setAchievements] = useState([
     {
+      id: 1,
       title: "Verilog-HDL GitHub Challenge",
       description: "Started an innovative GitHub challenge focused on Verilog HDL programming to help the community learn and practice digital design concepts.",
       type: "Open Source",
@@ -26,6 +27,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
       proofUrl: "https://github.com/t-swami/verilog-challenge"
     },
     {
+      id: 2,
       title: "2nd Prize - LPU Hack-IoT",
       description: "Secured second place in the IoT hackathon at Lovely Professional University for developing an innovative air quality monitoring system.",
       type: "Competition",
@@ -36,6 +38,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
       proofUrl: ""
     },
     {
+      id: 3,
       title: "Offer Letter - SoCtronics (HR)",
       description: "Received a job offer from SoCtronics for HR position, demonstrating versatility in both technical and management domains.",
       type: "Career",
@@ -47,22 +50,69 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
     }
   ]);
 
-  const handleUploadProof = (index: number) => {
-    const proofUrl = prompt("Enter proof URL or upload file:");
-    if (proofUrl) {
-      const updatedAchievements = [...achievements];
-      updatedAchievements[index].proofUrl = proofUrl;
-      setAchievements(updatedAchievements);
-      toast({
-        title: "Proof Uploaded",
-        description: `Proof for ${achievements[index].title} has been uploaded.`,
-      });
+  // Load achievements from localStorage on mount
+  useEffect(() => {
+    const storedAchievements = localStorage.getItem('portfolioAchievements');
+    const storedVisibility = localStorage.getItem('portfolioAchievementsVisibility');
+    if (storedAchievements) {
+      setAchievements(JSON.parse(storedAchievements));
     }
+    if (storedVisibility) {
+      setPublicAchievements(JSON.parse(storedVisibility));
+    }
+  }, []);
+
+  // Save achievements to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('portfolioAchievements', JSON.stringify(achievements));
+  }, [achievements]);
+
+  useEffect(() => {
+    localStorage.setItem('portfolioAchievementsVisibility', JSON.stringify(publicAchievements));
+  }, [publicAchievements]);
+
+  const handleUploadProof = (index: number) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf,.jpg,.jpeg,.png';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const fileUrl = event.target?.result as string;
+          const updatedAchievements = [...achievements];
+          updatedAchievements[index].proofUrl = fileUrl;
+          setAchievements(updatedAchievements);
+          toast({
+            title: "Proof Uploaded",
+            description: `Proof for ${achievements[index].title} has been uploaded.`,
+          });
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
   };
 
   const handleViewProof = (achievement: any) => {
     if (achievement.proofUrl) {
-      window.open(achievement.proofUrl, '_blank');
+      if (achievement.proofUrl.startsWith('http')) {
+        window.open(achievement.proofUrl, '_blank');
+      } else {
+        const newWindow = window.open();
+        if (newWindow) {
+          newWindow.document.write(`
+            <html>
+              <head><title>${achievement.title} Proof</title></head>
+              <body style="margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f0f0f0;">
+                <img src="${achievement.proofUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" alt="Achievement Proof" />
+              </body>
+            </html>
+          `);
+          newWindow.document.close();
+        }
+      }
     } else {
       toast({
         title: "Proof Not Available",
@@ -73,17 +123,88 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
   };
 
   const handleEditAchievement = (index: number) => {
+    const achievement = achievements[index];
+    const newTitle = prompt("Edit achievement title:", achievement.title);
+    if (!newTitle) return;
+    
+    const newDescription = prompt("Edit description:", achievement.description);
+    if (!newDescription) return;
+    
+    const newType = prompt("Edit type:", achievement.type);
+    if (!newType) return;
+    
+    const newYear = prompt("Edit year:", achievement.year);
+    if (!newYear) return;
+
+    const updatedAchievements = [...achievements];
+    updatedAchievements[index] = {
+      ...achievement,
+      title: newTitle,
+      description: newDescription,
+      type: newType,
+      year: newYear
+    };
+    setAchievements(updatedAchievements);
+    
     toast({
-      title: "Edit Achievement",
-      description: `Editing ${achievements[index].title}...`,
+      title: "Achievement Updated",
+      description: "Achievement details have been updated.",
     });
   };
 
   const handleAddAchievement = () => {
+    const title = prompt("Enter achievement title:");
+    if (!title) return;
+    
+    const description = prompt("Enter description:");
+    if (!description) return;
+    
+    const type = prompt("Enter type (e.g., Competition, Open Source, Career):");
+    if (!type) return;
+    
+    const year = prompt("Enter year:");
+    if (!year) return;
+
+    const colors = [
+      "from-blue-500 to-indigo-600",
+      "from-green-500 to-green-600", 
+      "from-purple-500 to-purple-600",
+      "from-red-500 to-red-600",
+      "from-yellow-500 to-orange-500"
+    ];
+
+    const newAchievement = {
+      id: Date.now(),
+      title,
+      description,
+      type,
+      year,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      icon: Trophy,
+      hasProof: false,
+      proofUrl: ""
+    };
+
+    setAchievements([...achievements, newAchievement]);
+    setPublicAchievements([...publicAchievements, true]);
+    
     toast({
-      title: "Add Achievement",
-      description: "Adding new achievement functionality will be implemented.",
+      title: "Achievement Added",
+      description: "New achievement has been added successfully.",
     });
+  };
+
+  const handleDeleteAchievement = (index: number) => {
+    if (confirm("Are you sure you want to delete this achievement?")) {
+      const updatedAchievements = achievements.filter((_, i) => i !== index);
+      const updatedVisibility = publicAchievements.filter((_, i) => i !== index);
+      setAchievements(updatedAchievements);
+      setPublicAchievements(updatedVisibility);
+      toast({
+        title: "Achievement Deleted",
+        description: "Achievement has been deleted.",
+      });
+    }
   };
 
   const togglePublicView = (index: number) => {
@@ -121,8 +242,10 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {achievements.map((achievement, index) => {
             const IconComponent = achievement.icon;
+            if (!isOwnerView && !publicAchievements[index]) return null;
+            
             return (
-              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group bg-white">
+              <Card key={achievement.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group bg-white">
                 <div className={`h-2 bg-gradient-to-r ${achievement.color}`}></div>
                 
                 <CardContent className="p-6">
@@ -154,6 +277,14 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
                         >
                           {publicAchievements[index] ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
                         </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleDeleteAchievement(index)}
+                          className="text-red-600"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -183,7 +314,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
                         <ExternalLink className="w-4 h-4 mr-2" />
                         View Proof
                       </Button>
-                      {achievement.icon === Github && (
+                      {achievement.icon === Github && achievement.proofUrl && (
                         <Button 
                           variant="outline" 
                           size="sm" 

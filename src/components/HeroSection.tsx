@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Download, Mail, Upload, Edit, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -13,12 +13,20 @@ const HeroSection = ({ isOwnerView }: HeroSectionProps) => {
   const [hasResume, setHasResume] = useState(false);
   const { toast } = useToast();
 
+  // Check for resume on component mount
+  useEffect(() => {
+    const storedResume = localStorage.getItem('portfolioResume');
+    setHasResume(!!storedResume);
+  }, []);
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setProfileImage(e.target?.result as string);
+        const result = e.target?.result as string;
+        setProfileImage(result);
+        localStorage.setItem('portfolioProfileImage', result);
         toast({
           title: "Profile photo updated",
           description: "Your profile picture has been successfully updated.",
@@ -28,27 +36,33 @@ const HeroSection = ({ isOwnerView }: HeroSectionProps) => {
     }
   };
 
+  useEffect(() => {
+    const storedImage = localStorage.getItem('portfolioProfileImage');
+    if (storedImage) {
+      setProfileImage(storedImage);
+    }
+  }, []);
+
   const handleResumeUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === 'application/pdf') {
-      setHasResume(true);
-      toast({
-        title: "Resume uploaded",
-        description: "Your resume has been uploaded successfully.",
-      });
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        localStorage.setItem('portfolioResume', result);
+        localStorage.setItem('portfolioResumeFileName', file.name);
+        setHasResume(true);
+        toast({
+          title: "Resume uploaded",
+          description: "Your resume has been uploaded successfully.",
+        });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleResumeView = () => {
-    if (hasResume) {
-      window.open('/resume', '_blank');
-    } else {
-      toast({
-        title: "No resume available",
-        description: "Please upload a resume first.",
-        variant: "destructive"
-      });
-    }
+    window.open('/resume', '_blank');
   };
 
   const scrollToContact = () => {
@@ -92,7 +106,6 @@ const HeroSection = ({ isOwnerView }: HeroSectionProps) => {
           {/* Profile Image with Tech Details */}
           <div className="relative flex justify-center">
             <div className="relative group">
-              {/* Decorative rings */}
               <div className="absolute -inset-6 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 animate-pulse"></div>
               <div className="absolute -inset-12 rounded-full bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 animate-ping"></div>
               
@@ -191,7 +204,6 @@ const HeroSection = ({ isOwnerView }: HeroSectionProps) => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
         <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
           <div className="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-pulse"></div>

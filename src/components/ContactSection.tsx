@@ -1,16 +1,51 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, Phone, MapPin, Linkedin, Github, MessageCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Mail, Phone, MapPin, Linkedin, Github, Edit } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
-const ContactSection = () => {
+interface ContactSectionProps {
+  isOwnerView: boolean;
+}
+
+const ContactSection = ({ isOwnerView }: ContactSectionProps) => {
+  const { toast } = useToast();
+  const [contactEmail, setContactEmail] = useState("tallanarayanaswami7@gmail.com");
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  // Load contact email from localStorage
+  useEffect(() => {
+    const storedEmail = localStorage.getItem('portfolioContactEmail');
+    if (storedEmail) {
+      setContactEmail(storedEmail);
+    }
+  }, []);
+
+  const handleEmailEdit = () => {
+    const newEmail = prompt("Enter your contact email:", contactEmail);
+    if (newEmail && newEmail.includes('@')) {
+      setContactEmail(newEmail);
+      localStorage.setItem('portfolioContactEmail', newEmail);
+      toast({
+        title: "Contact Email Updated",
+        description: "Your contact email has been updated.",
+      });
+    }
+  };
+
   const contactInfo = [
     {
       icon: Mail,
       label: "Email",
-      value: "tallanarayanaswami7@gmail.com",
-      href: "mailto:tallanarayanaswami7@gmail.com",
+      value: contactEmail,
+      href: `mailto:${contactEmail}`,
       color: "text-red-600"
     },
     {
@@ -43,77 +78,120 @@ const ContactSection = () => {
     }
   ];
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Create mailto link with form data
+    const subject = encodeURIComponent(`Portfolio Contact: ${formData.name}`);
+    const body = encodeURIComponent(`
+Name: ${formData.name}
+Email: ${formData.email}
+Message: ${formData.message}
+    `);
+    
+    window.open(`mailto:${contactEmail}?subject=${subject}&body=${body}`);
+    
+    toast({
+      title: "Message Sent",
+      description: "Your message has been sent via email.",
+    });
+    
+    // Clear form
+    setFormData({ name: '', email: '', message: '' });
+  };
+
   return (
     <section id="contact" className="py-20 px-4 bg-white">
       <div className="container mx-auto max-w-4xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-4">
-            Connect <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">With Me</span>
+            Contact <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Me</span>
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full"></div>
-          <p className="text-xl text-gray-600 mt-6">
-            Let's discuss opportunities and collaborate on innovative projects
-          </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {contactInfo.map((item, index) => {
-            const IconComponent = item.icon;
-            return (
-              <Card key={index} className="border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:shadow-lg group">
-                <CardContent className="p-6 text-center">
-                  <div className="flex flex-col items-center space-y-3">
-                    <div className={`w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors`}>
-                      <IconComponent className={`w-6 h-6 ${item.color}`} />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800 mb-1">{item.label}</h3>
-                      <a 
-                        href={item.href}
-                        className={`text-sm ${item.color} hover:underline break-all`}
-                        target={item.label === 'LinkedIn' || item.label === 'GitHub' ? '_blank' : undefined}
-                        rel={item.label === 'LinkedIn' || item.label === 'GitHub' ? 'noopener noreferrer' : undefined}
-                      >
-                        {item.value}
-                      </a>
-                    </div>
+        <div className="grid md:grid-cols-2 gap-12">
+          {/* Contact Info */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-6">Get In Touch</h3>
+            {contactInfo.map((item, index) => {
+              const IconComponent = item.icon;
+              return (
+                <div key={index} className="flex items-center space-x-4">
+                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <IconComponent className={`w-5 h-5 ${item.color}`} />
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800">{item.label}</p>
+                    <a 
+                      href={item.href}
+                      className={`text-sm ${item.color} hover:underline`}
+                      target={item.label === 'LinkedIn' || item.label === 'GitHub' ? '_blank' : undefined}
+                      rel={item.label === 'LinkedIn' || item.label === 'GitHub' ? 'noopener noreferrer' : undefined}
+                    >
+                      {item.value}
+                    </a>
+                  </div>
+                  {isOwnerView && item.label === 'Email' && (
+                    <Button variant="outline" size="sm" onClick={handleEmailEdit}>
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
-        <div className="mt-16 text-center">
-          <Card className="border-0 shadow-lg bg-gradient-to-r from-blue-50 to-indigo-50">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-gray-800 flex items-center justify-center">
-                <MessageCircle className="w-6 h-6 mr-2 text-blue-600" />
-                Let's Collaborate
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pb-8">
-              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                I'm always excited to work on innovative VLSI projects and collaborate with like-minded professionals. 
-                Whether you have a project idea or want to discuss opportunities, feel free to reach out!
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {/* Contact Form */}
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-6">Send Message</h3>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Input
+                    type="text"
+                    name="name"
+                    placeholder="Your Name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="email"
+                    name="email"
+                    placeholder="Your Email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Textarea
+                    name="message"
+                    placeholder="Your Message"
+                    rows={4}
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
                 <Button 
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                  onClick={() => window.open('mailto:tallanarayanaswami7@gmail.com')}
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                 >
                   <Mail className="w-4 h-4 mr-2" />
-                  Send Email
+                  Send Message
                 </Button>
-                <Button 
-                  variant="outline"
-                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
-                  onClick={() => window.open('https://linkedin.com/in/tallanarayanaswami', '_blank')}
-                >
-                  <Linkedin className="w-4 h-4 mr-2" />
-                  Connect on LinkedIn
-                </Button>
-              </div>
+              </form>
             </CardContent>
           </Card>
         </div>

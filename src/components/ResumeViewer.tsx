@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Download, ArrowLeft, Upload, FileText } from 'lucide-react';
@@ -7,14 +7,25 @@ import { useToast } from '@/hooks/use-toast';
 
 const ResumeViewer = () => {
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
+  const [resumeFileName, setResumeFileName] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+
+  // Load resume from localStorage on component mount
+  useEffect(() => {
+    const storedResume = localStorage.getItem('portfolioResume');
+    const storedFileName = localStorage.getItem('portfolioResumeFileName');
+    if (storedResume) {
+      setResumeUrl(storedResume);
+      setResumeFileName(storedFileName || 'Resume.pdf');
+    }
+  }, []);
 
   const handleDownload = () => {
     if (resumeUrl) {
       const link = document.createElement('a');
       link.href = resumeUrl;
-      link.download = 'Talla_Narayana_Swami_Resume.pdf';
+      link.download = resumeFileName || 'Talla_Narayana_Swami_Resume.pdf';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -41,17 +52,23 @@ const ResumeViewer = () => {
     if (file && file.type === 'application/pdf') {
       setIsUploading(true);
       
-      // Create a URL for the uploaded file
-      const fileUrl = URL.createObjectURL(file);
-      setResumeUrl(fileUrl);
-      
-      setTimeout(() => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setResumeUrl(result);
+        setResumeFileName(file.name);
+        
+        // Store in localStorage
+        localStorage.setItem('portfolioResume', result);
+        localStorage.setItem('portfolioResumeFileName', file.name);
+        
         setIsUploading(false);
         toast({
           title: "Resume Uploaded",
           description: "Your resume has been uploaded successfully.",
         });
-      }, 1000);
+      };
+      reader.readAsDataURL(file);
     } else {
       toast({
         title: "Invalid File",
