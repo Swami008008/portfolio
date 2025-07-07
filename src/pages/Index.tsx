@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import HeroSection from '../components/HeroSection';
 import AboutSection from '../components/AboutSection';
@@ -13,7 +13,31 @@ import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
 
 const Index = () => {
-  const [isOwnerView, setIsOwnerView] = useState(true);
+  const [isOwnerView, setIsOwnerView] = useState(false);
+
+  // Ensure visitor mode by default when accessed publicly
+  useEffect(() => {
+    const authToken = localStorage.getItem('portfolioAuthToken');
+    const authTime = localStorage.getItem('portfolioAuthTime');
+    
+    if (authToken && authTime) {
+      const timeDiff = Date.now() - parseInt(authTime);
+      const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+      
+      if (timeDiff < oneHour) {
+        // Only allow owner mode if authenticated and not expired
+        setIsOwnerView(false); // Still default to visitor mode
+      } else {
+        // Session expired, clear auth
+        localStorage.removeItem('portfolioAuthToken');
+        localStorage.removeItem('portfolioAuthTime');
+        setIsOwnerView(false);
+      }
+    } else {
+      // No auth token, force visitor mode
+      setIsOwnerView(false);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/50 relative overflow-hidden">

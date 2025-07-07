@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, User, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Menu, X, User, LogOut, Shield } from 'lucide-react';
+import AuthDialog from './AuthDialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface NavigationProps {
   isOwnerView: boolean;
@@ -10,7 +12,55 @@ interface NavigationProps {
 
 const Navigation = ({ isOwnerView, setIsOwnerView }: NavigationProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { toast } = useToast();
+
+  // Check authentication status on component mount
+  useEffect(() => {
+    const authToken = localStorage.getItem('portfolioAuthToken');
+    const authTime = localStorage.getItem('portfolioAuthTime');
+    
+    if (authToken && authTime) {
+      const timeDiff = Date.now() - parseInt(authTime);
+      const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+      
+      if (timeDiff < oneHour) {
+        setIsAuthenticated(true);
+        setIsOwnerView(true);
+      } else {
+        // Session expired
+        localStorage.removeItem('portfolioAuthToken');
+        localStorage.removeItem('portfolioAuthTime');
+        setIsAuthenticated(false);
+        setIsOwnerView(false);
+      }
+    }
+  }, [setIsOwnerView]);
+
+  const handleAuthSuccess = () => {
+    setIsAuthenticated(true);
+    setIsOwnerView(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('portfolioAuthToken');
+    localStorage.removeItem('portfolioAuthTime');
+    setIsAuthenticated(false);
+    setIsOwnerView(false);
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+  };
+
+  const handleOwnerModeToggle = () => {
+    if (isAuthenticated) {
+      setIsOwnerView(!isOwnerView);
+    } else {
+      setShowAuthDialog(true);
+    }
+  };
 
   const navItems = [
     { label: 'Home', href: '#home' },
@@ -19,113 +69,128 @@ const Navigation = ({ isOwnerView, setIsOwnerView }: NavigationProps) => {
     { label: 'Projects', href: '#projects' },
     { label: 'Experience', href: '#experience' },
     { label: 'Education', href: '#education' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Certifications', href: '#certifications' },
+    { label: 'Achievements', href: '#achievements' },
+    { label: 'Contact', href: '#contact' }
   ];
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMenuOpen(false);
-  };
-
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'glass-effect shadow-2xl border-b border-white/20' 
-        : 'bg-transparent'
-    }`}>
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-3">
-            <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg animate-glow">
-                <span className="text-white font-bold text-sm">TN</span>
-              </div>
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur opacity-30 animate-pulse"></div>
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Talla Narayana Swami
+              </h1>
             </div>
-            <span className="font-bold text-gray-800 text-lg gradient-text">Talla Narayana Swami</span>
-          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <button
-                key={item.label}
-                onClick={() => scrollToSection(item.href)}
-                className="relative text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium group"
-              >
-                {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 group-hover:w-full"></span>
-              </button>
-            ))}
-            
-            {/* Owner View Toggle */}
-            <Button
-              variant={isOwnerView ? "default" : "outline"}
-              size="sm"
-              onClick={() => setIsOwnerView(!isOwnerView)}
-              className={`ml-4 transition-all duration-300 ${
-                isOwnerView 
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg' 
-                  : 'glass-effect border-blue-200/50 hover:bg-white/90'
-              }`}
-            >
-              {isOwnerView ? <User className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-              {isOwnerView ? 'Owner' : 'Visitor'}
-            </Button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-2">
-            <Button
-              variant={isOwnerView ? "default" : "outline"}
-              size="sm"
-              onClick={() => setIsOwnerView(!isOwnerView)}
-              className={isOwnerView 
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
-                : 'glass-effect border-blue-200/50'
-              }
-            >
-              {isOwnerView ? <User className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </Button>
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 text-gray-600 hover:text-blue-600 transition-colors rounded-lg hover:bg-white/50"
-            >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden glass-effect border-t border-white/20 rounded-b-2xl shadow-2xl">
-            <div className="py-4 space-y-2">
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-8">
               {navItems.map((item) => (
-                <button
+                <a
                   key={item.label}
-                  onClick={() => scrollToSection(item.href)}
-                  className="block w-full text-left px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-white/50 transition-all duration-200 rounded-lg mx-2"
+                  href={item.href}
+                  className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                  onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}
-                </button>
+                </a>
               ))}
             </div>
+
+            {/* Control Buttons */}
+            <div className="flex items-center space-x-3">
+              {isAuthenticated && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsOwnerView(!isOwnerView)}
+                  className={isOwnerView ? "bg-blue-50 border-blue-200" : ""}
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  {isOwnerView ? 'Owner Mode' : 'Visitor Mode'}
+                </Button>
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={isAuthenticated ? handleLogout : handleOwnerModeToggle}
+                className="hidden sm:flex"
+              >
+                {isAuthenticated ? (
+                  <>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </>
+                ) : (
+                  <>
+                    <User className="w-4 h-4 mr-2" />
+                    Owner Login
+                  </>
+                )}
+              </Button>
+
+              {/* Mobile menu button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="lg:hidden"
+              >
+                {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
-    </nav>
+
+          {/* Mobile Navigation */}
+          {isMenuOpen && (
+            <div className="lg:hidden py-4 border-t border-gray-200/50">
+              <div className="flex flex-col space-y-3">
+                {navItems.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    className="text-gray-700 hover:text-blue-600 transition-colors font-medium px-2 py-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+                
+                <div className="border-t border-gray-200/50 pt-3 mt-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={isAuthenticated ? handleLogout : handleOwnerModeToggle}
+                    className="w-full"
+                  >
+                    {isAuthenticated ? (
+                      <>
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Logout
+                      </>
+                    ) : (
+                      <>
+                        <User className="w-4 h-4 mr-2" />
+                        Owner Login
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      <AuthDialog
+        isOpen={showAuthDialog}
+        onClose={() => setShowAuthDialog(false)}
+        onAuth={handleAuthSuccess}
+      />
+    </>
   );
 };
 

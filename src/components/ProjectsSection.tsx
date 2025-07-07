@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -202,6 +201,31 @@ const ProjectsSection = ({ isOwnerView }: ProjectsSectionProps) => {
     }
   };
 
+  const handleEditDate = (projectId: number, category: string) => {
+    const projects = category === 'embedded' ? embeddedProjects : vlsiProjects;
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    const newDate = prompt("Edit project date:", project.date);
+    if (!newDate?.trim()) return;
+
+    const updatedProject = {
+      ...project,
+      date: newDate.trim()
+    };
+
+    if (category === 'embedded') {
+      setEmbeddedProjects(embeddedProjects.map(p => p.id === projectId ? updatedProject : p));
+    } else {
+      setVlsiProjects(vlsiProjects.map(p => p.id === projectId ? updatedProject : p));
+    }
+
+    toast({
+      title: "Date Updated",
+      description: "Project date has been updated.",
+    });
+  };
+
   const ProjectCard = ({ project, category }: { project: any, category: string }) => (
     <Card className="group border-0 shadow-xl hover:shadow-2xl transition-all duration-500 bg-white overflow-hidden rounded-2xl transform hover:scale-105">
       {isOwnerView && (
@@ -235,9 +259,18 @@ const ProjectsSection = ({ isOwnerView }: ProjectsSectionProps) => {
           <CardTitle className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors leading-tight">
             {project.name}
           </CardTitle>
-          <div className="flex items-center text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+          <div className="flex items-center text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full relative group/date">
             <Calendar className="w-4 h-4 mr-1" />
             {project.date}
+            {isOwnerView && (
+              <button
+                onClick={() => handleEditDate(project.id, category)}
+                className="absolute inset-0 w-full h-full opacity-0 hover:opacity-100 bg-blue-100 rounded-full flex items-center justify-center transition-opacity"
+                title="Edit date"
+              >
+                <Edit className="w-3 h-3 text-blue-600" />
+              </button>
+            )}
           </div>
         </div>
       </CardHeader>
