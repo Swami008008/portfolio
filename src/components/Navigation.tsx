@@ -71,6 +71,7 @@ const Navigation = ({ isOwnerView, setIsOwnerView }: NavigationProps) => {
     { label: 'Education', href: '#education' },
     { label: 'Certifications', href: '#certifications' },
     { label: 'Achievements', href: '#achievements' },
+    { label: 'Activities', href: '#activities' },
     { label: 'Contact', href: '#contact' }
   ];
 

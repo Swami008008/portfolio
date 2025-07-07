@@ -9,6 +9,7 @@ import ExperienceSection from '../components/ExperienceSection';
 import EducationSection from '../components/EducationSection';
 import CertificationsSection from '../components/CertificationsSection';
 import AchievementsSection from '../components/AchievementsSection';
+import ActivitiesSection from '../components/ActivitiesSection';
 import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
 
@@ -59,6 +60,7 @@ const Index = () => {
         <EducationSection isOwnerView={isOwnerView} />
         <CertificationsSection isOwnerView={isOwnerView} />
         <AchievementsSection isOwnerView={isOwnerView} />
+        <ActivitiesSection isOwnerView={isOwnerView} />
         <ContactSection isOwnerView={isOwnerView} />
       </main>
       
