@@ -56,7 +56,7 @@ const ContactSection = ({ isOwnerView }: ContactSectionProps) => {
 
     try {
       // Submit to Google Sheets
-      const response = await fetch('https://script.google.com/macros/s/AKfycbzz0VtMsaWbNTq_3T_35lZVPMWORCpCEfTOBQaht1r9fCFhzXnqkVQYvQP8iYt7KxUn/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbyB-c8Z6gnHg9zShyciRxjNTmL6cJFEDnhny3S4srf_aw5KuI2Ke-J1eekLnLrgfy_7NQ/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: {

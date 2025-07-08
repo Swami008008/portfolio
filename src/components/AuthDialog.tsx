@@ -115,7 +115,7 @@ const AuthDialog = ({ isOpen, onClose, onAuth }: AuthDialogProps) => {
                 className="w-full"
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
-                Forgot Password?
+                Reset Password
               </Button>
             </div>
           </div>
