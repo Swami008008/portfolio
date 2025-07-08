@@ -80,6 +80,15 @@ const ActivitiesSection = ({ isOwnerView }: ActivitiesSectionProps) => {
     setEditingActivity(null);
   };
 
+  const handleDeleteActivity = (id: number) => {
+    const updatedActivities = activities.filter(activity => activity.id !== id);
+    saveActivities(updatedActivities);
+    toast({
+      title: "Activity Deleted",
+      description: "The activity has been successfully deleted.",
+    });
+  };
+
   const displayedActivities = isExpanded ? activities : activities.slice(0, 3);
 
   return (
@@ -111,6 +120,7 @@ const ActivitiesSection = ({ isOwnerView }: ActivitiesSectionProps) => {
               activity={activity}
               isOwnerView={isOwnerView}
               onEdit={handleEditActivity}
+              onDelete={handleDeleteActivity}
             />
           ))}
         </div>

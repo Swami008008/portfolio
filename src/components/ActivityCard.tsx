@@ -2,16 +2,17 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, Edit } from 'lucide-react';
+import { Calendar, Clock, Edit, Trash2 } from 'lucide-react';
 import { Activity } from '@/types/activity';
 
 interface ActivityCardProps {
   activity: Activity;
   isOwnerView: boolean;
   onEdit: (activity: Activity) => void;
+  onDelete: (id: number) => void;
 }
 
-const ActivityCard = ({ activity, isOwnerView, onEdit }: ActivityCardProps) => {
+const ActivityCard = ({ activity, isOwnerView, onEdit, onDelete }: ActivityCardProps) => {
   return (
     <Card className="card-hover group">
       <CardHeader>
@@ -34,14 +35,23 @@ const ActivityCard = ({ activity, isOwnerView, onEdit }: ActivityCardProps) => {
             </div>
           </div>
           {isOwnerView && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onEdit(activity)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <Edit className="w-4 h-4" />
-            </Button>
+            <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onEdit(activity)}
+              >
+                <Edit className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onDelete(activity.id)}
+                className="hover:bg-red-50 hover:border-red-200 hover:text-red-600"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
           )}
         </div>
       </CardHeader>
