@@ -52,9 +52,9 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
 
   // Icon mapping function
   const getIconComponent = (iconName: string) => {
-    const iconMap: { [key: string]: any } = {
-      Github,
-      Trophy
+    const iconMap: Record<string, React.ComponentType<any>> = {
+      'Github': Github,
+      'Trophy': Trophy
     };
     return iconMap[iconName] || Trophy;
   };
