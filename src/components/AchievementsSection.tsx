@@ -22,7 +22,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
       type: "Open Source",
       year: "2024",
       color: "from-blue-500 to-indigo-600",
-      icon: Github,
+      iconName: "Github",
       hasProof: true,
       proofUrl: "https://github.com/t-swami/verilog-challenge"
     },
@@ -33,7 +33,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
       type: "Competition",
       year: "2024",
       color: "from-green-500 to-green-600",
-      icon: Trophy,
+      iconName: "Trophy",
       hasProof: true,
       proofUrl: ""
     },
@@ -44,11 +44,20 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
       type: "Career",
       year: "2024",
       color: "from-purple-500 to-purple-600",
-      icon: Trophy,
+      iconName: "Trophy",
       hasProof: true,
       proofUrl: ""
     }
   ]);
+
+  // Icon mapping function
+  const getIconComponent = (iconName: string) => {
+    const iconMap: { [key: string]: any } = {
+      Github,
+      Trophy
+    };
+    return iconMap[iconName] || Trophy;
+  };
 
   // Load achievements from localStorage on mount
   useEffect(() => {
@@ -180,7 +189,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
       type,
       year,
       color: colors[Math.floor(Math.random() * colors.length)],
-      icon: Trophy,
+      iconName: "Trophy",
       hasProof: false,
       proofUrl: ""
     };
@@ -241,7 +250,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {achievements.map((achievement, index) => {
-            const IconComponent = achievement.icon;
+            const IconComponent = getIconComponent(achievement.iconName);
             if (!isOwnerView && !publicAchievements[index]) return null;
             
             return (
@@ -314,7 +323,7 @@ const AchievementsSection = ({ isOwnerView }: AchievementsSectionProps) => {
                         <ExternalLink className="w-4 h-4 mr-2" />
                         View Proof
                       </Button>
-                      {achievement.icon === Github && achievement.proofUrl && (
+                      {achievement.iconName === "Github" && achievement.proofUrl && (
                         <Button 
                           variant="outline" 
                           size="sm" 
