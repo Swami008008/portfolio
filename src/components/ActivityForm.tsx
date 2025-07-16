@@ -35,11 +35,11 @@ const ActivityForm = ({ showDialog, editingActivity, onClose, onSubmit }: Activi
   useEffect(() => {
     if (editingActivity) {
       setFormData({
-        eventName: editingActivity.eventName,
-        description: editingActivity.description,
-        date: editingActivity.date,
-        time: editingActivity.time,
-        image: editingActivity.image || ''
+        eventName: editingActivity.eventName || '',
+        description: editingActivity.description || '',
+        date: editingActivity.date || '',
+        time: editingActivity.time || '',
+        image: editingActivity.image ? editingActivity.image : ''
       });
     } else {
       setFormData({
